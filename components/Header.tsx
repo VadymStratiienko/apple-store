@@ -6,12 +6,13 @@ import {
   ShoppingBagIcon,
   UserIcon,
 } from "@heroicons/react/outline";
-import {useSelector} from "react-redux"
+import { useSelector } from "react-redux";
 import { selectBasketItems } from "../redux/basketSlice";
+import { signIn, signOut, useSession } from "next-auth/react";
 
 function Header() {
-  const session = false;
-  const items = useSelector(selectBasketItems); 
+  const { data: session } = useSession();
+  const items = useSelector(selectBasketItems);
   return (
     <header className="sticky top-0 z-30 flex w-full items-center justify-between bg-[#E7ECEE] p-4">
       <div className="flex items-center justify-center md:w-1/5">
@@ -34,35 +35,35 @@ function Header() {
         <a className="headerLink">Explore</a>
         <a className="headerLink">Support</a>
         <a className="headerLink">Business</a>
-        </div>
-        <div className="flex items-center justify-center gap-x-4 md:w-1/5">
-          <SearchIcon className="headerIcon" />
-          <Link href='/checkout'>
+      </div>
+      <div className="flex items-center justify-center gap-x-4 md:w-1/5">
+        <SearchIcon className="headerIcon" />
+        <Link href="/checkout">
           <div className="relative cursor-pointer">
-          {items.length > 0 && (
+            {items.length > 0 && (
               <span className="absolute -right-1 -top-1 z-50 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-violet-500 text-[10px] text-white">
                 {items.length}
               </span>
             )}
-          <ShoppingBagIcon className="headerIcon" />
-        </div>
-          </Link>
-          {session ? (
-            <Image
+            <ShoppingBagIcon className="headerIcon" />
+          </div>
+        </Link>
+        {session ? (
+          <Image
             src={
-              // session.user?.image || 
+              session.user?.image ||
               "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
             }
-            alt=''
+            alt=""
             className="cursor-pointer rounded-full"
             width={34}
             height={34}
-            // onClick={() =>singOut()}
-            />
-          ):(
-            <UserIcon className="headerIcon" /*onClick={() =>singOut()} *//>
-            )}
-        </div>
+            onClick={() => signOut()}
+          />
+        ) : (
+          <UserIcon className="headerIcon" onClick={() => signIn()} />
+        )}
+      </div>
     </header>
   );
 }
